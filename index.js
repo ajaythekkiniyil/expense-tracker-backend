@@ -20,14 +20,15 @@ app.get('/', (req, res) => res.send('welcome to expense tracker'))
 
 // add new expense
 app.post('/add-expense', (req, res) => {
-    const { date, amount, category } = req.body
+    const { date, amount, category, id } = req.body
 
     // creating new expense and save to database
     const newExpense = new expenseModel({
         date: date,
         amount: amount,
-        category: category
-    })
+        category: category,
+        userId: id
+    })  
 
     newExpense.save()
         .then(resp => {
@@ -53,11 +54,11 @@ app.get('/get-all-expenses/:userId', async (req, res) => {
     const monthlylimit = limit[0].monthlylimit
 
     const totalMonthExpense = await expenseModel.aggregate([
-        { $match: { date: { $gte: startDate, $lte: endDate } } },
+        { $match: { date: { $gte: startDate, $lte: endDate }, userId: userId } },
         { $group: { _id: null, total: { $sum: "$amount" } } }
     ])
 
-    expenseModel.find()
+    expenseModel.find({userId: userId})
         .then(resp => {
             res.status(200).json({ totalMonthExpense: totalMonthExpense[0]?.total, listOfExpenses: resp, monthlylimit })
         })

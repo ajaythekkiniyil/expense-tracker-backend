@@ -9,7 +9,11 @@ const expenseSchema = new Schema({
     },
     category: {
         type: String,
+    },
+    userId:{
+        type: String,
     }
+
 })
 
 const expenseModel = model('expense', expenseSchema)
